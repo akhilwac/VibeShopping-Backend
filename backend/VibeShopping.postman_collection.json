@@ -1,0 +1,1110 @@
+{
+	"info": {
+		"_postman_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+		"name": "VibeShopping API",
+		"description": "Complete API collection for the VibeShopping FastAPI backend. Covers authentication, user management, product catalog, wishlist, cart, orders, payments, addresses, payment methods, reviews, and banners.\n\nSetup:\n1. Import this collection into Postman.\n2. The base_url variable defaults to http://localhost:8000/api/v1.\n3. Use the Register or Login endpoint first -- the access_token and refresh_token will be auto-extracted into collection variables.\n4. All authenticated endpoints will automatically use the Bearer token.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:8000/api/v1",
+			"type": "string"
+		},
+		{
+			"key": "access_token",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "refresh_token",
+			"value": "",
+			"type": "string"
+		}
+	],
+	"item": [
+		{
+			"name": "Auth",
+			"description": "Authentication endpoints for registration, login, social login, token refresh, password reset, and session management.",
+			"item": [
+				{
+					"name": "Register",
+					"description": "Create a new user account with email and password. Returns access and refresh tokens on success.",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200 || pm.response.code === 201) {",
+									"    const json = pm.response.json();",
+									"    if (json.data && json.data.access_token) {",
+									"        pm.collectionVariables.set('access_token', json.data.access_token);",
+									"        pm.collectionVariables.set('refresh_token', json.data.refresh_token);",
+									"        console.log('Tokens extracted and saved to collection variables.');",
+									"    }",
+									"    pm.test('Registration successful', function () {",
+									"        pm.expect(json.data).to.have.property('access_token');",
+									"        pm.expect(json.data).to.have.property('refresh_token');",
+									"    });",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"full_name\": \"Priya Sharma\",\n    \"email\": \"priya.sharma@example.com\",\n    \"phone\": \"+919876543210\",\n    \"password\": \"SecurePass123!\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/auth/register",
+							"host": ["{{base_url}}"],
+							"path": ["auth", "register"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Login",
+					"description": "Authenticate an existing user with email and password. Returns access and refresh tokens.",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    const json = pm.response.json();",
+									"    if (json.data && json.data.access_token) {",
+									"        pm.collectionVariables.set('access_token', json.data.access_token);",
+									"        pm.collectionVariables.set('refresh_token', json.data.refresh_token);",
+									"        console.log('Tokens extracted and saved to collection variables.');",
+									"    }",
+									"    pm.test('Login successful', function () {",
+									"        pm.expect(json.data).to.have.property('access_token');",
+									"        pm.expect(json.data).to.have.property('refresh_token');",
+									"    });",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"priya.sharma@example.com\",\n    \"password\": \"SecurePass123!\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/auth/login",
+							"host": ["{{base_url}}"],
+							"path": ["auth", "login"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Social Login",
+					"description": "Authenticate via a social provider (Google or Apple). Provide the provider name and the ID token obtained from the OAuth flow.",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"provider\": \"google\",\n    \"id_token\": \"eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwiZW1haWwiOiJwcml5YUBnbWFpbC5jb20ifQ.signature\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/auth/social",
+							"host": ["{{base_url}}"],
+							"path": ["auth", "social"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Refresh Token",
+					"description": "Exchange a valid refresh token for a new pair of access and refresh tokens.",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    const json = pm.response.json();",
+									"    if (json.data && json.data.access_token) {",
+									"        pm.collectionVariables.set('access_token', json.data.access_token);",
+									"        pm.collectionVariables.set('refresh_token', json.data.refresh_token);",
+									"        console.log('Tokens refreshed and saved to collection variables.');",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"refresh_token\": \"{{refresh_token}}\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/auth/refresh",
+							"host": ["{{base_url}}"],
+							"path": ["auth", "refresh"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Forgot Password",
+					"description": "Request a password reset email. The server will send a reset link to the provided email address if the account exists.",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"priya.sharma@example.com\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/auth/forgot-password",
+							"host": ["{{base_url}}"],
+							"path": ["auth", "forgot-password"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Reset Password",
+					"description": "Reset the user's password using a token received via email. Requires the reset token and a new password (minimum 8 characters).",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"token\": \"abc123def456ghi789jkl012mno345pqr678\",\n    \"new_password\": \"NewSecurePass456!\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/auth/reset-password",
+							"host": ["{{base_url}}"],
+							"path": ["auth", "reset-password"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Current User",
+					"description": "Retrieve the profile of the currently authenticated user based on the access token.",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/auth/me",
+							"host": ["{{base_url}}"],
+							"path": ["auth", "me"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Logout",
+					"description": "Invalidate the current session and log the user out.",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/auth/logout",
+							"host": ["{{base_url}}"],
+							"path": ["auth", "logout"]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Users",
+			"description": "User profile management endpoints for viewing and updating user information.",
+			"item": [
+				{
+					"name": "Get Profile",
+					"description": "Retrieve the authenticated user's full profile including name, email, phone, avatar, and account metadata.",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/users/profile",
+							"host": ["{{base_url}}"],
+							"path": ["users", "profile"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Profile",
+					"description": "Update one or more fields of the authenticated user's profile. All fields are optional -- only provided fields will be changed.",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"full_name\": \"Priya S. Sharma\",\n    \"email\": \"priya.updated@example.com\",\n    \"phone\": \"+919876543211\",\n    \"avatar_url\": \"https://cdn.vibeshopping.com/avatars/priya-sharma.jpg\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/users/profile",
+							"host": ["{{base_url}}"],
+							"path": ["users", "profile"]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Categories",
+			"description": "Product category browsing and filtering. Categories organize the product catalog into logical groups.",
+			"item": [
+				{
+					"name": "Get All Categories",
+					"description": "Retrieve the complete list of product categories with their names, icons, sort order, and product counts.",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/categories/",
+							"host": ["{{base_url}}"],
+							"path": ["categories", ""]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Category by ID",
+					"description": "Retrieve details for a specific category by its UUID.",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/categories/550e8400-e29b-41d4-a716-446655440000",
+							"host": ["{{base_url}}"],
+							"path": ["categories", "550e8400-e29b-41d4-a716-446655440000"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Category Products",
+					"description": "List all products within a specific category. Supports sorting (newest, price_asc, price_desc, rating), filtering by price range and minimum rating, and pagination.",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}",
+								"description": "Optional. When provided, wishlisted status is included in the response.",
+								"disabled": true
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/categories/550e8400-e29b-41d4-a716-446655440000/products?sort=newest&min_price=100&max_price=5000&min_rating=4.0&page=1&page_size=20",
+							"host": ["{{base_url}}"],
+							"path": ["categories", "550e8400-e29b-41d4-a716-446655440000", "products"],
+							"query": [
+								{
+									"key": "sort",
+									"value": "newest",
+									"description": "Sort order: newest, price_asc, price_desc, rating"
+								},
+								{
+									"key": "min_price",
+									"value": "100",
+									"description": "Minimum price filter"
+								},
+								{
+									"key": "max_price",
+									"value": "5000",
+									"description": "Maximum price filter"
+								},
+								{
+									"key": "min_rating",
+									"value": "4.0",
+									"description": "Minimum average rating filter"
+								},
+								{
+									"key": "page",
+									"value": "1",
+									"description": "Page number (starting from 1)"
+								},
+								{
+									"key": "page_size",
+									"value": "20",
+									"description": "Items per page (1-100, default 20)"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Products",
+			"description": "Product catalog endpoints for listing, searching, and retrieving product details and reviews.",
+			"item": [
+				{
+					"name": "List Products",
+					"description": "Retrieve a paginated list of all products. Supports sorting, price range filtering, and minimum rating filtering.",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}",
+								"description": "Optional. When provided, wishlisted status is included in the response.",
+								"disabled": true
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/products/?sort=newest&min_price=50&max_price=10000&min_rating=3.5&page=1&page_size=20",
+							"host": ["{{base_url}}"],
+							"path": ["products", ""],
+							"query": [
+								{
+									"key": "sort",
+									"value": "newest",
+									"description": "Sort order: newest, price_asc, price_desc, rating"
+								},
+								{
+									"key": "min_price",
+									"value": "50",
+									"description": "Minimum price filter"
+								},
+								{
+									"key": "max_price",
+									"value": "10000",
+									"description": "Maximum price filter"
+								},
+								{
+									"key": "min_rating",
+									"value": "3.5",
+									"description": "Minimum average rating filter"
+								},
+								{
+									"key": "page",
+									"value": "1",
+									"description": "Page number (starting from 1)"
+								},
+								{
+									"key": "page_size",
+									"value": "20",
+									"description": "Items per page (1-100, default 20)"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Featured Products",
+					"description": "Retrieve a curated list of featured/promoted products for the homepage or discovery section.",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}",
+								"description": "Optional. When provided, wishlisted status is included in the response.",
+								"disabled": true
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/products/featured",
+							"host": ["{{base_url}}"],
+							"path": ["products", "featured"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Search Products",
+					"description": "Full-text search across product names and descriptions. The 'q' query parameter is required. Supports the same sorting, filtering, and pagination as the list endpoint.",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}",
+								"description": "Optional. When provided, wishlisted status is included in the response.",
+								"disabled": true
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/products/search?q=wireless headphones&sort=rating&min_price=500&max_price=15000&min_rating=4.0&page=1&page_size=20",
+							"host": ["{{base_url}}"],
+							"path": ["products", "search"],
+							"query": [
+								{
+									"key": "q",
+									"value": "wireless headphones",
+									"description": "Search query string (required, minimum 1 character)"
+								},
+								{
+									"key": "sort",
+									"value": "rating",
+									"description": "Sort order: newest, price_asc, price_desc, rating"
+								},
+								{
+									"key": "min_price",
+									"value": "500",
+									"description": "Minimum price filter"
+								},
+								{
+									"key": "max_price",
+									"value": "15000",
+									"description": "Maximum price filter"
+								},
+								{
+									"key": "min_rating",
+									"value": "4.0",
+									"description": "Minimum average rating filter"
+								},
+								{
+									"key": "page",
+									"value": "1",
+									"description": "Page number (starting from 1)"
+								},
+								{
+									"key": "page_size",
+									"value": "20",
+									"description": "Items per page (1-100, default 20)"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Product Detail",
+					"description": "Retrieve full details for a single product including description, variants (with SKU, stock, and price overrides), images, ratings, and wishlist status.",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}",
+								"description": "Optional. When provided, wishlisted status is included in the response.",
+								"disabled": true
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/products/660e8400-e29b-41d4-a716-446655440001",
+							"host": ["{{base_url}}"],
+							"path": ["products", "660e8400-e29b-41d4-a716-446655440001"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Product Reviews",
+					"description": "Retrieve a paginated list of reviews for a specific product. Each review includes the reviewer's name, rating (1-5), optional comment, and timestamp.",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/products/660e8400-e29b-41d4-a716-446655440001/reviews?page=1&page_size=20",
+							"host": ["{{base_url}}"],
+							"path": ["products", "660e8400-e29b-41d4-a716-446655440001", "reviews"],
+							"query": [
+								{
+									"key": "page",
+									"value": "1",
+									"description": "Page number (starting from 1)"
+								},
+								{
+									"key": "page_size",
+									"value": "20",
+									"description": "Items per page (1-100, default 20)"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Wishlist",
+			"description": "Wishlist management for saving and removing favorite products. All endpoints require authentication.",
+			"item": [
+				{
+					"name": "Get Wishlist",
+					"description": "Retrieve all items in the authenticated user's wishlist, including product names, prices, and primary images.",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/wishlist/",
+							"host": ["{{base_url}}"],
+							"path": ["wishlist", ""]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Toggle Wishlist Item",
+					"description": "Add a product to the wishlist if it is not already there, or remove it if it is. Acts as a toggle -- calling twice with the same product_id adds then removes it.",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"product_id\": \"660e8400-e29b-41d4-a716-446655440001\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/wishlist/toggle",
+							"host": ["{{base_url}}"],
+							"path": ["wishlist", "toggle"]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Cart",
+			"description": "Shopping cart management for adding, updating, and removing items. All endpoints require authentication.",
+			"item": [
+				{
+					"name": "Get Cart",
+					"description": "Retrieve the authenticated user's cart including all items, subtotal, delivery fee, total, and item count.",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/cart/",
+							"host": ["{{base_url}}"],
+							"path": ["cart", ""]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add Item to Cart",
+					"description": "Add a product variant to the cart with a specified quantity. If the variant is already in the cart, the quantity may be incremented.",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"variant_id\": \"770e8400-e29b-41d4-a716-446655440002\",\n    \"quantity\": 2\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/cart/items",
+							"host": ["{{base_url}}"],
+							"path": ["cart", "items"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Cart Item",
+					"description": "Update the quantity of an existing cart item. The quantity must be at least 1.",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"quantity\": 3\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/cart/items/880e8400-e29b-41d4-a716-446655440003",
+							"host": ["{{base_url}}"],
+							"path": ["cart", "items", "880e8400-e29b-41d4-a716-446655440003"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Remove Cart Item",
+					"description": "Remove a specific item from the cart by its cart item UUID.",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/cart/items/880e8400-e29b-41d4-a716-446655440003",
+							"host": ["{{base_url}}"],
+							"path": ["cart", "items", "880e8400-e29b-41d4-a716-446655440003"]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Orders",
+			"description": "Order lifecycle management including creation from cart, listing order history, and viewing order details.",
+			"item": [
+				{
+					"name": "Create Order",
+					"description": "Create a new order from the current cart contents. Requires a delivery address ID and an optional payment method ID. The cart is cleared upon successful order creation.",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"address_id\": \"990e8400-e29b-41d4-a716-446655440004\",\n    \"payment_method_id\": \"aa0e8400-e29b-41d4-a716-446655440005\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/orders/",
+							"host": ["{{base_url}}"],
+							"path": ["orders", ""]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "List Orders",
+					"description": "Retrieve a paginated list of the authenticated user's orders with status, total, item count, and creation date.",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/orders/?page=1&page_size=20",
+							"host": ["{{base_url}}"],
+							"path": ["orders", ""],
+							"query": [
+								{
+									"key": "page",
+									"value": "1",
+									"description": "Page number (starting from 1)"
+								},
+								{
+									"key": "page_size",
+									"value": "20",
+									"description": "Items per page (1-100, default 20)"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Order Detail",
+					"description": "Retrieve full details for a specific order including all line items with product names, variant labels, unit prices, quantities, and order totals.",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/orders/bb0e8400-e29b-41d4-a716-446655440006",
+							"host": ["{{base_url}}"],
+							"path": ["orders", "bb0e8400-e29b-41d4-a716-446655440006"]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Payments",
+			"description": "Payment processing endpoints for initiating and verifying payments against orders.",
+			"item": [
+				{
+					"name": "Initiate Payment",
+					"description": "Start the payment flow for an existing order. Returns payment gateway details needed by the client to complete the transaction. Optionally specify a payment method.",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"order_id\": \"bb0e8400-e29b-41d4-a716-446655440006\",\n    \"payment_method_id\": \"aa0e8400-e29b-41d4-a716-446655440005\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/payments/initiate",
+							"host": ["{{base_url}}"],
+							"path": ["payments", "initiate"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Verify Payment",
+					"description": "Verify a completed payment using the order ID and the transaction ID returned by the payment gateway. Marks the order as paid upon successful verification.",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"order_id\": \"bb0e8400-e29b-41d4-a716-446655440006\",\n    \"gateway_txn_id\": \"pay_Lx9qR4kFmT2vBn\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/payments/verify",
+							"host": ["{{base_url}}"],
+							"path": ["payments", "verify"]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Addresses",
+			"description": "Delivery address management for the authenticated user. Supports CRUD operations and setting a default address.",
+			"item": [
+				{
+					"name": "Get All Addresses",
+					"description": "Retrieve all saved delivery addresses for the authenticated user.",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/addresses/",
+							"host": ["{{base_url}}"],
+							"path": ["addresses", ""]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Address",
+					"description": "Add a new delivery address. The label field is a friendly name (e.g., Home, Office). Set is_default to true to make this the primary address.",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"label\": \"Home\",\n    \"address_line1\": \"42, Lotus Apartments, MG Road\",\n    \"address_line2\": \"Near City Mall, Koramangala\",\n    \"city\": \"Bengaluru\",\n    \"state\": \"Karnataka\",\n    \"postal_code\": \"560034\",\n    \"country\": \"India\",\n    \"is_default\": true\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/addresses/",
+							"host": ["{{base_url}}"],
+							"path": ["addresses", ""]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Address",
+					"description": "Update one or more fields of an existing address. All fields are optional -- only provided fields will be changed.",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"label\": \"Office\",\n    \"address_line1\": \"7th Floor, Tower B, Prestige Tech Park\",\n    \"address_line2\": \"Outer Ring Road, Marathahalli\",\n    \"city\": \"Bengaluru\",\n    \"state\": \"Karnataka\",\n    \"postal_code\": \"560103\",\n    \"is_default\": false\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/addresses/990e8400-e29b-41d4-a716-446655440004",
+							"host": ["{{base_url}}"],
+							"path": ["addresses", "990e8400-e29b-41d4-a716-446655440004"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Address",
+					"description": "Permanently remove a saved delivery address by its UUID.",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/addresses/990e8400-e29b-41d4-a716-446655440004",
+							"host": ["{{base_url}}"],
+							"path": ["addresses", "990e8400-e29b-41d4-a716-446655440004"]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Payment Methods",
+			"description": "Saved payment method management. Users can store tokenized payment methods (cards, UPI, wallets) for faster checkout.",
+			"item": [
+				{
+					"name": "Get Payment Methods",
+					"description": "Retrieve all saved payment methods for the authenticated user. Sensitive data is masked (only last four digits are stored).",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/payment-methods/",
+							"host": ["{{base_url}}"],
+							"path": ["payment-methods", ""]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Payment Method",
+					"description": "Save a new payment method with a tokenized reference from the payment gateway. The type field indicates the instrument type (card, upi, wallet), and provider indicates the network or service (visa, mastercard, gpay, phonepe).",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"type\": \"card\",\n    \"provider\": \"visa\",\n    \"last_four\": \"4242\",\n    \"token\": \"tok_visa_4242_abc123def456\",\n    \"is_default\": true\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/payment-methods/",
+							"host": ["{{base_url}}"],
+							"path": ["payment-methods", ""]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Payment Method",
+					"description": "Remove a saved payment method by its UUID. The tokenized reference is also invalidated.",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/payment-methods/aa0e8400-e29b-41d4-a716-446655440005",
+							"host": ["{{base_url}}"],
+							"path": ["payment-methods", "aa0e8400-e29b-41d4-a716-446655440005"]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Reviews",
+			"description": "Product review submission. Authenticated users can leave ratings and comments for products they have purchased.",
+			"item": [
+				{
+					"name": "Create Review",
+					"description": "Submit a review for a product. Rating is required (1-5 stars) and comment is optional. Each user can typically submit one review per product.",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"product_id\": \"660e8400-e29b-41d4-a716-446655440001\",\n    \"rating\": 5,\n    \"comment\": \"Excellent quality! The fabric feels premium and the fit is perfect. Delivered on time with great packaging.\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/reviews/",
+							"host": ["{{base_url}}"],
+							"path": ["reviews", ""]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Banners",
+			"description": "Promotional banner content for the storefront. Returns currently active banners for display on the homepage or category pages.",
+			"item": [
+				{
+					"name": "Get Active Banners",
+					"description": "Retrieve all currently active promotional banners including title, subtitle, call-to-action text and link, and banner image URL. No authentication required.",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/banners/",
+							"host": ["{{base_url}}"],
+							"path": ["banners", ""]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
