@@ -2,13 +2,13 @@
 	"info": {
 		"_postman_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
 		"name": "VibeShopping API",
-		"description": "Complete API collection for the VibeShopping FastAPI backend. Covers authentication, user management, product catalog, wishlist, cart, orders, payments, addresses, payment methods, reviews, and banners.\n\nSetup:\n1. Import this collection into Postman.\n2. The base_url variable defaults to http://localhost:8000/api/v1.\n3. Use the Register or Login endpoint first -- the access_token and refresh_token will be auto-extracted into collection variables.\n4. All authenticated endpoints will automatically use the Bearer token.",
+		"description": "Complete API collection for the VibeShopping FastAPI backend. Covers authentication, user management, product catalog, wishlist, cart, orders, payments, addresses, payment methods, reviews, and banners.\n\nSetup:\n1. Import this collection into Postman.\n2. The base_url variable defaults to the deployed Render API at https://vibeshopping-backend.onrender.com/api/v1.\n3. If you want to test locally later, change base_url back to http://localhost:8000/api/v1.\n4. Use the Register or Login endpoint first -- the access_token and refresh_token will be auto-extracted into collection variables.\n5. All authenticated endpoints will automatically use the Bearer token.",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"variable": [
 		{
 			"key": "base_url",
-			"value": "http://localhost:8000/api/v1",
+			"value": "https://vibeshopping-backend.onrender.com/api/v1",
 			"type": "string"
 		},
 		{
