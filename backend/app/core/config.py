@@ -32,6 +32,15 @@ class Settings(BaseSettings):
 
     @model_validator(mode="after")
     def _validate_secrets(self) -> "Settings":
+        if self.DATABASE_URL.startswith("postgres://"):
+            self.DATABASE_URL = self.DATABASE_URL.replace(
+                "postgres://", "postgresql+asyncpg://", 1
+            )
+        elif self.DATABASE_URL.startswith("postgresql://"):
+            self.DATABASE_URL = self.DATABASE_URL.replace(
+                "postgresql://", "postgresql+asyncpg://", 1
+            )
+
         weak = {"change-me", "your-secret-key-change-in-production", "secret", ""}
         if self.JWT_SECRET_KEY in weak:
             raise ValueError(
