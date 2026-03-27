@@ -2,6 +2,7 @@ from fastapi import APIRouter
 
 from app.api.v1.routes import (
     addresses,
+    admin,
     auth,
     banners,
     cart,
@@ -28,3 +29,4 @@ api_router.include_router(addresses.router)
 api_router.include_router(payment_methods.router)
 api_router.include_router(reviews.router)
 api_router.include_router(banners.router)
+api_router.include_router(admin.router)

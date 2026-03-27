@@ -1105,6 +1105,152 @@
 					"response": []
 				}
 			]
+		},
+		{
+			"name": "Admin",
+			"description": "Admin dashboard endpoints for store analytics, user management, order overview, product inventory, and revenue reporting. No authentication required (intended for internal use behind a VPN or admin gateway).",
+			"item": [
+				{
+					"name": "Dashboard Stats",
+					"description": "Retrieve aggregate dashboard statistics including total users, active/inactive users, total orders, order status counts (pending, delivered, cancelled), total products, total reviews, and total revenue.",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/admin/dashboard",
+							"host": ["{{base_url}}"],
+							"path": ["admin", "dashboard"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "List Users",
+					"description": "Retrieve a paginated list of all users with order and review counts. Supports searching by name or email.",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/admin/users?page=1&page_size=20&search=",
+							"host": ["{{base_url}}"],
+							"path": ["admin", "users"],
+							"query": [
+								{
+									"key": "page",
+									"value": "1",
+									"description": "Page number (starting from 1)"
+								},
+								{
+									"key": "page_size",
+									"value": "20",
+									"description": "Items per page (1-100, default 20)"
+								},
+								{
+									"key": "search",
+									"value": "",
+									"description": "Search by full_name or email (optional)"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Toggle User Active",
+					"description": "Toggle a user's is_active flag between true and false. Pass the user UUID in the path.",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/admin/users/a1000000-0000-0000-0000-000000000001/toggle-active",
+							"host": ["{{base_url}}"],
+							"path": ["admin", "users", "a1000000-0000-0000-0000-000000000001", "toggle-active"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "List All Orders",
+					"description": "Retrieve a paginated list of all orders across all users with customer info and item counts. Supports filtering by order status.",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/admin/orders?page=1&page_size=20&status=",
+							"host": ["{{base_url}}"],
+							"path": ["admin", "orders"],
+							"query": [
+								{
+									"key": "page",
+									"value": "1",
+									"description": "Page number (starting from 1)"
+								},
+								{
+									"key": "page_size",
+									"value": "20",
+									"description": "Items per page (1-100, default 20)"
+								},
+								{
+									"key": "status",
+									"value": "",
+									"description": "Filter by status: pending, confirmed, shipped, delivered, cancelled (optional)"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "List All Products",
+					"description": "Retrieve a paginated list of all products with category name, total stock, variant count, and primary image. Supports search by name and filtering by category.",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/admin/products?page=1&page_size=50&search=&category_id=",
+							"host": ["{{base_url}}"],
+							"path": ["admin", "products"],
+							"query": [
+								{
+									"key": "page",
+									"value": "1",
+									"description": "Page number (starting from 1)"
+								},
+								{
+									"key": "page_size",
+									"value": "50",
+									"description": "Items per page (1-100, default 50)"
+								},
+								{
+									"key": "search",
+									"value": "",
+									"description": "Search by product name (optional)"
+								},
+								{
+									"key": "category_id",
+									"value": "",
+									"description": "Filter by category UUID (optional)"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Revenue Stats",
+					"description": "Retrieve revenue breakdown by order status and product category, plus order count by status. Used for dashboard charts and analytics.",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/admin/revenue",
+							"host": ["{{base_url}}"],
+							"path": ["admin", "revenue"]
+						}
+					},
+					"response": []
+				}
+			]
 		}
 	]
 }

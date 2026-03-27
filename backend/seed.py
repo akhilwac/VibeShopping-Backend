@@ -93,7 +93,7 @@ async def seed():
                 312,
                 True,
                 "A sleek, minimalist backpack crafted from premium water-resistant fabric. Perfect for daily commutes and weekend adventures. Features padded laptop compartment and hidden anti-theft pocket.",
-                "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=400",
+                "https://drive.google.com/file/d/1w9Joz6cine-gCQw85TGqsB-oZrQggJOV/view?usp=sharing",
                 [("Color: Black", None, 45, "BAG-MIN-BLK"), ("Color: Gray", None, 32, "BAG-MIN-GRY"), ("Color: Navy", None, 18, "BAG-MIN-NVY")],
             ),
             (
